@@ -1,0 +1,25 @@
+[tools]
+python = "3.15"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
+
+[tasks.install]
+run = "pip install -r requirements-dev.txt"
+
+[tasks.lint]
+run = ["ruff check .", "ruff format --check ."]
+
+[tasks.fmt]
+run = ["ruff check --fix --exit-zero .", "ruff format ."]  # remaining issues are printed, `lint` fails on them
+
+[tasks.test]
+dir = "backend"
+run = [
+  "python manage.py check",
+  "python manage.py makemigrations --check --dry-run",
+  "python manage.py test",
+]
+
+[tasks.audit]
+run = "pip-audit -r requirements-dev.txt"
