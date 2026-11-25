@@ -12,7 +12,11 @@ from rest_framework.test import APITestCase
 
 class RegisterTests(APITestCase):
     url = reverse("register")
-    payload = {"username": "test", "email": "test@test.com", "password": "Sup3r-secret-pw"}
+    payload = {
+        "username": "test",
+        "email": "test@test.com",
+        "password": "Sup3r-secret-pw",
+    }
 
     def test_register_valid(self):
         response = self.client.post(self.url, self.payload)
@@ -34,13 +38,17 @@ class RegisterTests(APITestCase):
         self.assertIn("username", response.data)
 
     def test_register_missing_password(self):
-        response = self.client.post(self.url, {"username": "test", "email": "test@test.com"})
+        response = self.client.post(
+            self.url, {"username": "test", "email": "test@test.com"}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("password", response.data)
 
     def test_register_duplicate_username(self):
         self.client.post(self.url, self.payload)
-        response = self.client.post(self.url, {**self.payload, "email": "other@test.com"})
+        response = self.client.post(
+            self.url, {**self.payload, "email": "other@test.com"}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(User.objects.count(), 1)
 
@@ -48,7 +56,9 @@ class RegisterTests(APITestCase):
     @expectedFailure
     def test_register_duplicate_email_case_insensitive(self):
         self.client.post(self.url, self.payload)
-        response = self.client.post(self.url, {**self.payload, "username": "test2", "email": "TEST@test.com"})
+        response = self.client.post(
+            self.url, {**self.payload, "username": "test2", "email": "TEST@test.com"}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     # Gap: serializer bypasses AUTH_PASSWORD_VALIDATORS.
@@ -63,20 +73,28 @@ class TokenTests(APITestCase):
     refresh_url = reverse("refresh")
 
     def setUp(self):
-        User.objects.create_user(username="test", email="test@test.com", password="Sup3r-secret-pw")
+        User.objects.create_user(
+            username="test", email="test@test.com", password="Sup3r-secret-pw"
+        )
 
     def test_token_valid(self):
-        response = self.client.post(self.url, {"username": "test", "password": "Sup3r-secret-pw"})
+        response = self.client.post(
+            self.url, {"username": "test", "password": "Sup3r-secret-pw"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
 
     def test_token_wrong_password(self):
-        response = self.client.post(self.url, {"username": "test", "password": "SUP3R-SECRET-PW"})
+        response = self.client.post(
+            self.url, {"username": "test", "password": "SUP3R-SECRET-PW"}
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_unknown_user(self):
-        response = self.client.post(self.url, {"username": "nobody", "password": "Sup3r-secret-pw"})
+        response = self.client.post(
+            self.url, {"username": "nobody", "password": "Sup3r-secret-pw"}
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_missing_password(self):
@@ -84,7 +102,9 @@ class TokenTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_refresh_valid(self):
-        tokens = self.client.post(self.url, {"username": "test", "password": "Sup3r-secret-pw"}).data
+        tokens = self.client.post(
+            self.url, {"username": "test", "password": "Sup3r-secret-pw"}
+        ).data
         response = self.client.post(self.refresh_url, {"refresh": tokens["refresh"]})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
