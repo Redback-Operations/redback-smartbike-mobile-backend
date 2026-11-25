@@ -1,0 +1,5 @@
+-r requirements.txt
+django-stubs==6.1.2
+djangorestframework-stubs==3.18.2
+ruff==0.17.6
+pip-audit==2.10.1

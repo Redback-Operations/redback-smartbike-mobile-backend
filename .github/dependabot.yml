@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # requirements.txt and requirements-dev.txt (Python version lives in mise.toml, bumped manually)
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python-minor-patch:
+        update-types: [minor, patch]
+
+  # SHA-pinned actions in .github/workflows (updates SHA + version comment)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

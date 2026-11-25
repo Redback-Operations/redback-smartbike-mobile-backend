@@ -1,0 +1,16 @@
+[tool.ruff]
+line-length = 88  # Black / Django coding style
+target-version = "py315"
+extend-exclude = ["**/migrations"]
+src = ["backend"]  # so `api` / `backend` imports sort as first-party
+
+[tool.ruff.lint]
+# E/W pycodestyle (PEP 8), F pyflakes, I isort, UP pyupgrade, B bugbear,
+# DJ flake8-django, S bandit (security)
+select = ["E", "W", "F", "I", "UP", "B", "DJ", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests.py" = ["S105", "S106"]  # fake passwords in tests
+
+[tool.ruff.format]
+quote-style = "double"
